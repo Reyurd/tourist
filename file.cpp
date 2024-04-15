@@ -19,7 +19,7 @@ int main() {
     // 使用std::getline从文件中读取一行，直到文件结束
     while (std::getline(file, line)) {
         // 输出读取的行
-        std::cout << line << std::endl;
+        std::cout << line.length() << std::endl;
     }
 
     // 关闭文件
