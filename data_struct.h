@@ -27,6 +27,13 @@ typedef struct node
     int type;
     std::string name;
 
+    int empty()
+    {
+        if(x==0)
+            return 1;
+        else
+            return 0;
+    }
 
 }buiding;
 

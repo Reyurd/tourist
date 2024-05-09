@@ -59,89 +59,33 @@ int init_map(const std::string filePath,std::vector<buiding> &node,Matrix &graph
     return 0;
 }
 
-// BFS 查找路径函数
-/* std::vector<int> bfsPath(const Matrix& graph, int start, int end) {
-    std::queue<int> q;
-    std::vector<bool> visited(N, false);
-    std::unordered_map<int, int> parent;  // 存储路径
-    std::vector<int> path;
+//后续修改寻路算法
+bool dfs(const std::vector<buiding> buiding_data, Matrix graph, int current, int destination, Walk& path, std::vector<bool>& visited) {
+    // 将当前节点标记为已访问
+    visited[current] = true;
+    path.push_back(buiding_data[current]);
 
-    // 初始化
-    q.push(start);
-    visited[start] = true;
-    parent[start] = -1;  // 起始节点没有父节点
+    // 检查当前节点是否是目的地
+    if (current == destination) {
+        return true;
+    }
 
-    while (!q.empty()) {
-        int current = q.front();
-        q.pop();
-
-        // 如果到达终点
-        if (current == end) {
-            // 回溯构造路径
-            while (current != -1) {
-                path.push_back(current);
-                current = parent[current];
-            }
-            std::reverse(path.begin(), path.end());
-            return path;
-        }
-
-        // 遍历所有相邻节点
-        for (int i = 0; i < N; ++i) {
-            if (graph[current][i] && !visited[i]) {  // 检查是否有边且未被访问
-                visited[i] = true;
-                q.push(i);
-                parent[i] = current;
+    // 遍历所有可能的连接节点
+    for (int i = 0; i < MAX_NODE_CODE; ++i) {
+        if (!graph[current][i].empty() && !visited[i]) {  // 检查边的存在并且节点未被访问
+            if (dfs(buiding_data,graph, i, destination, path, visited)) {
+                return true;
             }
         }
     }
 
-    return path; // 如果找不到路径则返回空
-}
- */
-Walk bfs(const std::vector<buiding> buiding_data,Matrix graph,int start,int end)
-{
-    Walk path;
-    std::queue<int> q;
-    std::vector<bool> visited(MAX_NODE_CODE, false);
-    std::unordered_map<int, int> parent;
-    
-    // 初始化
-    q.push(start);
-    visited[start] = true;
-    parent[start] = -1;  // 起始节点没有父节点
-
-    path.push_back(buiding_data[start]);
-    while (!q.empty()) {
-        int current = q.front();
-        q.pop();
-
-        // 如果到达终点
-        if (current == end) {
-            // 回溯构造路径
-            while (current != -1) {
-                path.push_back(buiding_data[current]);
-                current = parent[current];
-            }
-            std::reverse(path.begin(), path.end());
-            return path;
-        }
-
-        // 遍历所有相邻节点
-        for (int i = 0; i < MAX_NODE_CODE; ++i) {
-            if ((!graph[current][i].empty()) && !visited[i]) {  // 检查是否有边且未被访问
-                visited[i] = true;
-                q.push(i);
-                parent[i] = current;
-            }
-        }
-    }
-    path.push_back(buiding_data[end]);
-    
-    return path;
+    // 如果从当前节点开始没有找到路径，则回溯
+    path.pop_back();
+    visited[current] = false;
+    return false;
 }
 
-Walk generate_path(const std::vector<buiding> buiding_data,const Matrix graph)
+Walk generate_path(const std::vector<buiding> buiding_data,Matrix graph)
 {
 
     //选择控制
@@ -173,7 +117,9 @@ Walk generate_path(const std::vector<buiding> buiding_data,const Matrix graph)
     std::cout<<"正在为您生成游览路线..."<<std::endl;
   
     //查参数选址
-    auto path=bfs(buiding_data,graph,num_s,num_e);
+    Walk path;
+    std::vector<bool> visited(MAX_NODE_CODE, false);
+    dfs(buiding_data,graph,num_s,num_e,path,visited);
 
     return path;
 }
@@ -183,29 +129,9 @@ int print_path(const std::vector<buiding> buiding_data,const Matrix graph,const 
     //打印路径
     std::cout<<"生成路径如下：";
     for (auto node : path) {
-        std::cout << node.name << "->";
+        std::cout << node.name << " ";
     }
     std::cout << std::endl;
 
     return 0;
-}
-
-int main()
-{
-
-    std::string filePath = "data.txt";
-    std::vector<buiding> buiding_data;//每一个结点的数据
-    Matrix graph={0};
-
-    init_map(filePath,buiding_data,graph);
-    auto path = generate_path(buiding_data,graph);
-     if (!path.empty()) {
-        print_path(buiding_data,graph,path);
-    } else {
-        std::cout << "No path found."<< std::endl;
-    }
-
-    return 0;
-
-
 }
