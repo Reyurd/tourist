@@ -10,6 +10,7 @@
 #include<array>
 #include<queue>
 #include<algorithm>
+#include<filesystem>
 
 
 #define MAX_NODE_CODE 10
@@ -17,6 +18,7 @@
 const int MAX_ROWS = MAX_NODE_CODE+1;
 const int MAX_COLS = MAX_NODE_CODE+1;
 
+//std::string current_name;
 typedef struct node
 {
     
@@ -63,7 +65,7 @@ typedef struct edge
 using namespace std;
 using Matrix = std::array<std::array<road,MAX_COLS>,MAX_ROWS>;
 using Walk = std::vector<buiding>;
-
+namespace fs = std::filesystem;
 
 
 
